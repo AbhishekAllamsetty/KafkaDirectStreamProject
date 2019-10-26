@@ -68,8 +68,8 @@ object KafkaDirectStream {
 
         // selection on corrupted record will raise an exception and kill job
         // so not processing anything if data is null
-        val check = df.columns(0).toString
-        if (!check.contains("corrupt_record")){
+        // processing only if df is not empty
+        if (!df.head(1).isEmpty){
           var data_df = df.select(explode(col("values"))).select("col.*")
 
           //converting all the column types to string
