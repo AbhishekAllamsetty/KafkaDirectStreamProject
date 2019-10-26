@@ -36,7 +36,7 @@ object KafkaDirectStream {
     val ssc = new StreamingContext(sc, Seconds(5))
 
     // setting spark log level to ERROR
-    sc.setLogLevel("ERROR")
+    sc.setLogLevel("INFO")
 
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> zkQuorum,
@@ -76,7 +76,7 @@ object KafkaDirectStream {
           import org.apache.spark.sql.types.StringType
           data_df = data_df.select(data_df.columns.map(c => col(c).cast(StringType)) : _*)
 
-          val table_name = df.select("table_name").collect()(0).toString()
+          val table_name = df.select("table_name").collect()(0)(0).toString
           val rows_count = data_df.count().toInt
 
           if (rows_count > 0){
@@ -84,7 +84,7 @@ object KafkaDirectStream {
 
             // adding current timestamp to the table column
             import java.time.LocalDateTime
-            data_df = data_df.withColumn("insert_ts", lit(LocalDateTime.now()))
+            data_df = data_df.withColumn("insert_ts", lit(current_timestamp()))
 
             // writing the data to location
             logger.info("Writing data to  ::  " + table_name)
