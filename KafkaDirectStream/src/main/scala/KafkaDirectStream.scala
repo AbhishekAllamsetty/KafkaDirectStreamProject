@@ -50,7 +50,7 @@ object KafkaDirectStream {
     logger.info("Creating Kafka Direct Stream")
     val stream: InputDStream[ConsumerRecord[String, String]] = KafkaUtils.createDirectStream[String, String](
       ssc,
-      PreferConsistent,
+      PreferConsistent, //it consistently distributes paritions accross all the executors
       Subscribe[String, String](Array(topic), kafkaParams)
     )
 
